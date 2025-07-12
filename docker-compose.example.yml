@@ -34,9 +34,16 @@ services:
       
       # === DEVELOPMENT TOOLS (optional) ===
       # Mount Claude Code configuration if using AI assistance
-      - ~/.claude:/home/developer/.claude:cached
+      # CLAUDE user memory
+      - ~/.claude/CLAUDE.md:/home/developer/.claude/CLAUDE.md:cached
+      # CLAUDE user credentials
+      - ~/.claude/.credentials.json:/home/developer/.claude/.credentials.json:cached
+      # CLAUDE settings from host (Optional)
+      - ~/.claude/settings.json:/home/developer/.claude/settings.json:cached
       - ~/.claude.json:/home/developer/.claude.json:cached
-      
+      # CLAUDE commands from host (Optional)
+      - ~/.claude/commands:/home/developer/.claude/commands:cached
+
       # === PROJECT-SPECIFIC MOUNTS (customize as needed) ===
       # Example: Mount shared documentation
       # - ~/Devel/dev-docs:/dev-docs:ro
