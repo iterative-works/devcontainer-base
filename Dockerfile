@@ -58,27 +58,7 @@ RUN if id 1000 >/dev/null 2>&1; then userdel -r $(id -un 1000); fi && \
 # Set working directory
 WORKDIR /workspace
 
-# Prepare for Nix installation (as root)
-RUN mkdir -m 0755 /nix && chown developer /nix
-
 # Switch to non-root user
-USER developer
-
-# Install package managers
-# Nix package manager (single-user mode)
-RUN curl -L https://nixos.org/nix/install | sh \
-    && echo '. /home/developer/.nix-profile/etc/profile.d/nix.sh' >> ~/.bashrc \
-    && echo 'export PATH="$HOME/.nix-profile/bin:$PATH"' >> ~/.bashrc
-
-# Configure Nix to use binary caches (system-wide configuration)
-USER root
-RUN mkdir -p /etc/nix \
-    && echo 'substituters = https://cache.nixos.org/' > /etc/nix/nix.conf \
-    && echo 'trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=' >> /etc/nix/nix.conf \
-    && echo 'build-use-substitutes = true' >> /etc/nix/nix.conf \
-    && echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf \
-    && echo 'sandbox = false' >> /etc/nix/nix.conf
-
 USER developer
 
 # Coursier (Scala toolchain)

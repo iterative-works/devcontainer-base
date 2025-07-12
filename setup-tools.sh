@@ -3,8 +3,40 @@ set -e
 
 echo "🔧 Setting up development tools..."
 
-# Source environment
-source ~/.bashrc
+# Install Nix if not already present
+if ! command -v nix &> /dev/null; then
+    echo "📦 Installing Nix package manager..."
+    
+    # Create nix directory if it doesn't exist (for volume mount)
+    sudo mkdir -p /nix
+    sudo chown developer:developer /nix
+    
+    # Install Nix in single-user mode
+    curl -L https://nixos.org/nix/install | sh
+    
+    # Add Nix to bashrc
+    echo '. /home/developer/.nix-profile/etc/profile.d/nix.sh' >> ~/.bashrc
+    echo 'export PATH="$HOME/.nix-profile/bin:$PATH"' >> ~/.bashrc
+    
+    # Configure Nix (create system-wide config as root)
+    sudo mkdir -p /etc/nix
+    sudo tee /etc/nix/nix.conf > /dev/null <<EOF
+substituters = https://cache.nixos.org/
+trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+build-use-substitutes = true
+experimental-features = nix-command flakes
+sandbox = false
+EOF
+    
+    echo "✅ Nix installation complete"
+else
+    echo "✅ Nix already installed"
+fi
+
+# Source Nix environment directly to make it available in this session
+if [ -f /home/developer/.nix-profile/etc/profile.d/nix.sh ]; then
+    . /home/developer/.nix-profile/etc/profile.d/nix.sh
+fi
 
 # Install tools via Nix
 echo "📦 Installing direnv via Nix..."
@@ -54,6 +86,9 @@ if ! command -v claude &> /dev/null; then
     eval "$(mise activate bash)"
     npm install -g @anthropic-ai/claude-code
 fi
+
+echo "Installing Playwright dependencies..."
+cs launch com.microsoft.playwright:playwright:1.52.0 -M com.microsoft.playwright.CLI -- install-deps
 
 echo "✅ Development tools setup complete!"
 echo ""

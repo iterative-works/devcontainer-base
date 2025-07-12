@@ -15,6 +15,10 @@ services:
       # Mount project directory (adjust parent directory path if needed)
       - ..:/workspace:cached
       
+      # === NIX STORE (recommended for persistence) ===
+      # Persist the entire Nix installation across container restarts
+      - nix-store:/nix:cached
+      
       # === CACHE DIRECTORIES (recommended for all projects) ===
       # These significantly speed up tool installation and package downloads
       - ~/.cache/nix:/home/developer/.cache/nix:cached
@@ -30,7 +34,6 @@ services:
       # === TOOL INSTALLATIONS (recommended for all projects) ===
       # Persist tool installations across container restarts
       - ~/.local/share/mise:/home/developer/.local/share/mise:cached
-      - ~/.local/share/coursier:/home/developer/.local/share/coursier:cached
       
       # === DEVELOPMENT TOOLS (optional) ===
       # Mount Claude Code configuration if using AI assistance
@@ -76,6 +79,10 @@ services:
     stdin_open: true
     tty: true
     command: /bin/bash
+
+volumes:
+  # Named volume for Nix store persistence
+  nix-store:
 
 # === DOCKER COMPOSE PROJECT NAMING ===
 # To avoid container name conflicts between projects, create a .env file
