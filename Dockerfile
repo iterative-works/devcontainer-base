@@ -61,10 +61,6 @@ WORKDIR /workspace
 # Prepare for Nix installation (as root)
 RUN mkdir -m 0755 /nix && chown developer /nix
 
-# Copy setup script (as root)
-COPY setup-tools.sh /usr/local/bin/setup-tools.sh
-RUN chmod +x /usr/local/bin/setup-tools.sh
-
 # Switch to non-root user
 USER developer
 
@@ -92,16 +88,19 @@ RUN mkdir -p ~/.local/bin \
     && echo 'export PATH="$HOME/.local/bin:$HOME/.local/share/coursier/bin:$PATH"' >> ~/.bashrc
 
 # Mise (runtime manager) - using GitHub releases
-RUN curl -L "https://github.com/jdx/mise/releases/latest/download/mise-linux-x64" -o ~/.local/bin/mise \
+RUN curl -L "https://mise.jdx.dev/mise-latest-linux-x64" -o ~/.local/bin/mise \
     && chmod +x ~/.local/bin/mise \
     && echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
 # Create cache directories and local share directories (to prevent Docker from creating them as root)
-RUN mkdir -p ~/.cache/nix ~/.cache/coursier ~/.cache/mise ~/.cache/npm \
+RUN mkdir -p ~/.cache/nix ~/.cache/coursier ~/.cache/mise ~/.cache/npm ~/.claude \
     && mkdir -p ~/.local/share/mise ~/.local/share/coursier
 
 # Set up shell environment
 RUN echo 'export PS1="\[\e[32m\]\u@\h:\w\[\e[0m\]$ "' >> ~/.bashrc
+
+# Copy setup script (as developer)
+COPY --chown=developer:developer --chmod=0755 setup-tools.sh /home/developer/.local/bin/setup-tools.sh
 
 # Add tool check script to bashrc
 RUN echo '' >> ~/.bashrc \
@@ -111,7 +110,7 @@ RUN echo '' >> ~/.bashrc \
     && echo '    echo ""' >> ~/.bashrc \
     && echo '    echo "🔧 Development tools not fully installed."' >> ~/.bashrc \
     && echo '    echo "💡 Run the setup script to install missing tools:"' >> ~/.bashrc \
-    && echo '    echo "   /usr/local/bin/setup-tools.sh"' >> ~/.bashrc \
+    && echo '    echo "   ~/.local/bin/setup-tools.sh"' >> ~/.bashrc \
     && echo '    echo ""' >> ~/.bashrc \
     && echo '  fi' >> ~/.bashrc \
     && echo 'fi' >> ~/.bashrc

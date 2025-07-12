@@ -31,7 +31,6 @@ services:
       # Persist tool installations across container restarts
       - ~/.local/share/mise:/home/developer/.local/share/mise:cached
       - ~/.local/share/coursier:/home/developer/.local/share/coursier:cached
-      - ~/.local/bin:/home/developer/.local/bin:cached
       
       # === DEVELOPMENT TOOLS (optional) ===
       # Mount Claude Code configuration if using AI assistance

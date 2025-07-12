@@ -15,7 +15,7 @@ fi
 # Add direnv hook to bash
 echo "🔗 Setting up direnv bash hook..."
 if ! grep -q "direnv hook bash" ~/.bashrc; then
-    echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
+    echo 'eval "$(~/.nix-profile/bin/direnv hook bash)"' >> ~/.bashrc
     echo "✅ Added direnv bash hook to ~/.bashrc"
 else
     echo "✅ direnv bash hook already configured"
@@ -42,8 +42,7 @@ fi
 # Install Node.js via Mise
 echo "🟢 Installing Node.js via Mise..."
 if ! command -v node &> /dev/null; then
-    mise install node@lts
-    mise global node@lts
+    mise use --global node@lts
     # Reload mise to get node/npm in PATH
     eval "$(mise activate bash)"
 fi
@@ -66,3 +65,7 @@ echo "  - scala-cli: $(which scala-cli 2>/dev/null || echo 'not found')"
 echo "  - metals: $(which metals 2>/dev/null || echo 'not found')"
 echo "  - node: $(which node 2>/dev/null || echo 'not found')"
 echo "  - claude: $(which claude 2>/dev/null || echo 'not found')"
+
+if [ -e ".envrc" ]; then
+	echo "Now restart bash and run direnv allow to load project env."
+fi
