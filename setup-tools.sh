@@ -12,6 +12,15 @@ if ! command -v direnv &> /dev/null; then
     nix-env -iA nixpkgs.direnv
 fi
 
+# Add direnv hook to bash
+echo "🔗 Setting up direnv bash hook..."
+if ! grep -q "direnv hook bash" ~/.bashrc; then
+    echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
+    echo "✅ Added direnv bash hook to ~/.bashrc"
+else
+    echo "✅ direnv bash hook already configured"
+fi
+
 # Install Scala tools via Coursier
 echo "⚡ Installing Scala tools via Coursier..."
 if ! command -v scala &> /dev/null; then

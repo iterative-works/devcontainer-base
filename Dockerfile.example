@@ -1,0 +1,51 @@
+# Example Dockerfile for projects using iterative-works/devcontainer-base
+# Copy this file to your project's .devcontainer/Dockerfile and customize as needed
+
+FROM iterative-works/devcontainer-base:latest
+
+# === PROJECT-SPECIFIC SETUP ===
+# Add any project-specific tools, configurations, or setup here
+
+# Example: Install additional system packages
+# USER root
+# RUN apt-get update && apt-get install -y \
+#     project-specific-package \
+#     another-package \
+#     && apt-get clean \
+#     && rm -rf /var/lib/apt/lists/*
+# USER developer
+
+# Example: Install project-specific tools via package managers
+# RUN nix-env -iA nixpkgs.some-tool
+# RUN cs install some-scala-tool
+# RUN mise install python@latest
+
+# Example: Copy project configuration files
+# COPY .tool-versions /workspace/.tool-versions
+# COPY .envrc.example /workspace/.envrc.example
+
+# Example: Set up project-specific environment
+# ENV PROJECT_SPECIFIC_VAR=value
+
+# Example: Run project setup script
+# COPY setup-project.sh /usr/local/bin/
+# RUN chmod +x /usr/local/bin/setup-project.sh
+
+# === BASE IMAGE FEATURES ===
+# The base image already includes:
+# - Ubuntu 24.04 with essential dev tools (git, curl, build-essential, etc.)
+# - Package managers: Nix, Coursier, Mise
+# - Development tools setup script: /usr/local/bin/setup-tools.sh
+# - Automatic tool checking with helpful notifications
+# - UID 1000 for proper host file permission mapping
+# - Optimized cache directories and PATH configuration
+# - Environment variables: SBT_TPOLECAT_DEV=1
+
+# === DEVELOPMENT TOOLS ===
+# To install development tools in the container, run:
+# /usr/local/bin/setup-tools.sh
+# This installs: direnv, Scala tools, Node.js, Claude Code CLI
+
+# === VS CODE INTEGRATION ===
+# For VS Code DevContainer integration, also create:
+# .devcontainer/devcontainer.json

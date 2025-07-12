@@ -1,0 +1,112 @@
+{
+  // Example VS Code DevContainer configuration for iterative-works/devcontainer-base
+  // Copy this file to your project's .devcontainer/devcontainer.json and customize as needed
+  
+  "name": "Development Container",
+  
+  // Use Docker Compose (recommended)
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev-container",
+  "workspaceFolder": "/workspace",
+  
+  // Alternative: Use Dockerfile directly (uncomment and remove dockerComposeFile above)
+  // "build": {
+  //   "dockerfile": "Dockerfile",
+  //   "context": "."
+  // },
+  
+  // === POST-CREATION COMMANDS ===
+  // Commands to run after container is created
+  "postCreateCommand": "/usr/local/bin/setup-tools.sh",
+  
+  // === VS CODE SETTINGS ===
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.profiles.linux": {
+      "bash": {
+        "path": "/bin/bash"
+      }
+    }
+  },
+  
+  // === VS CODE EXTENSIONS ===
+  // Customize these extensions based on your project needs
+  "extensions": [
+    // === SCALA DEVELOPMENT ===
+    "scalameta.metals",                    // Scala language server
+    "scala-lang.scala",                    // Scala syntax highlighting
+    
+    // === GENERAL DEVELOPMENT ===
+    "ms-vscode.vscode-json",              // JSON support
+    "redhat.vscode-yaml",                 // YAML support
+    "ms-vscode.vscode-typescript-next",   // TypeScript support
+    
+    // === GIT INTEGRATION ===
+    "eamodio.gitlens",                    // Enhanced Git capabilities
+    
+    // === DOCKER SUPPORT ===
+    "ms-azuretools.vscode-docker",        // Docker support
+    
+    // === CODE QUALITY ===
+    "esbenp.prettier-vscode",             // Code formatting
+    "bradlc.vscode-tailwindcss",          // CSS utilities (if using Tailwind)
+    
+    // === PRODUCTIVITY ===
+    "ms-vscode.vscode-speech",            // AI assistance
+    "github.copilot",                     // AI code completion (if available)
+    
+    // === PROJECT-SPECIFIC EXTENSIONS ===
+    // Add extensions specific to your project here
+    // "extension.name"
+  ],
+  
+  // === PORT FORWARDING ===
+  // Automatically forward these ports from container to host
+  "forwardPorts": [
+    // 3000,  // Example: React dev server
+    // 8080,  // Example: Backend API
+    // 5432   // Example: PostgreSQL
+  ],
+  
+  // === ENVIRONMENT VARIABLES ===
+  // Additional environment variables for VS Code and extensions
+  "containerEnv": {
+    // "CUSTOM_VAR": "value"
+  },
+  
+  // === LIFECYCLE HOOKS ===
+  // "initializeCommand": "echo 'Starting container setup...'",
+  // "postStartCommand": "echo 'Container started!'",
+  // "postAttachCommand": "echo 'VS Code attached!'",
+  
+  // === FEATURES (OPTIONAL) ===
+  // Additional dev container features can be added here
+  // "features": {
+  //   "ghcr.io/devcontainers/features/github-cli:1": {}
+  // },
+  
+  // === USER CONFIGURATION ===
+  "remoteUser": "developer",
+  
+  // === MOUNTS (ALTERNATIVE TO DOCKER COMPOSE VOLUMES) ===
+  // If not using docker-compose, you can specify mounts here
+  // "mounts": [
+  //   "source=${localEnv:HOME}/.cache/nix,target=/home/developer/.cache/nix,type=bind,consistency=cached"
+  // ],
+  
+  // === CUSTOMIZATIONS ===
+  "customizations": {
+    "vscode": {
+      // VS Code specific settings
+      "settings": {
+        "java.configuration.runtimes": [
+          {
+            "name": "JavaSE-21",
+            "path": "/home/developer/.local/share/coursier/jvm/adopt@1.21.0-1"
+          }
+        ],
+        "metals.javaHome": "/home/developer/.local/share/coursier/jvm/adopt@1.21.0-1"
+      }
+    }
+  }
+}

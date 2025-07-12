@@ -46,8 +46,12 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
-# Create a non-root user
-RUN useradd -m -s /bin/bash developer && \
+# Set development environment variables
+ENV SBT_TPOLECAT_DEV=1
+
+# Create a non-root user with UID 1000 (handle existing user if needed)
+RUN if id 1000 >/dev/null 2>&1; then userdel -r $(id -un 1000); fi && \
+    useradd -m -s /bin/bash -u 1000 developer && \
     usermod -aG sudo developer && \
     echo 'developer ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
@@ -70,21 +74,47 @@ RUN curl -L https://nixos.org/nix/install | sh \
     && echo '. /home/developer/.nix-profile/etc/profile.d/nix.sh' >> ~/.bashrc \
     && echo 'export PATH="$HOME/.nix-profile/bin:$PATH"' >> ~/.bashrc
 
+# Configure Nix to use binary caches (system-wide configuration)
+USER root
+RUN mkdir -p /etc/nix \
+    && echo 'substituters = https://cache.nixos.org/' > /etc/nix/nix.conf \
+    && echo 'trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=' >> /etc/nix/nix.conf \
+    && echo 'build-use-substitutes = true' >> /etc/nix/nix.conf \
+    && echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf \
+    && echo 'sandbox = false' >> /etc/nix/nix.conf
+
+USER developer
+
 # Coursier (Scala toolchain)
 RUN mkdir -p ~/.local/bin \
     && curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz | gzip -d > ~/.local/bin/cs \
     && chmod +x ~/.local/bin/cs \
     && echo 'export PATH="$HOME/.local/bin:$HOME/.local/share/coursier/bin:$PATH"' >> ~/.bashrc
 
-# Mise (runtime manager)
-RUN curl https://mise.run | sh \
+# Mise (runtime manager) - using GitHub releases
+RUN curl -L "https://github.com/jdx/mise/releases/latest/download/mise-linux-x64" -o ~/.local/bin/mise \
+    && chmod +x ~/.local/bin/mise \
     && echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
-# Create cache directories
-RUN mkdir -p ~/.cache/nix ~/.cache/coursier ~/.cache/mise ~/.cache/npm
+# Create cache directories and local share directories (to prevent Docker from creating them as root)
+RUN mkdir -p ~/.cache/nix ~/.cache/coursier ~/.cache/mise ~/.cache/npm \
+    && mkdir -p ~/.local/share/mise ~/.local/share/coursier
 
 # Set up shell environment
 RUN echo 'export PS1="\[\e[32m\]\u@\h:\w\[\e[0m\]$ "' >> ~/.bashrc
+
+# Add tool check script to bashrc
+RUN echo '' >> ~/.bashrc \
+    && echo '# Check if development tools are installed and notify user' >> ~/.bashrc \
+    && echo 'if [ -t 1 ] && [ "$SHLVL" -eq 1 ]; then' >> ~/.bashrc \
+    && echo '  if ! command -v scala &> /dev/null || ! command -v node &> /dev/null || ! command -v claude &> /dev/null; then' >> ~/.bashrc \
+    && echo '    echo ""' >> ~/.bashrc \
+    && echo '    echo "🔧 Development tools not fully installed."' >> ~/.bashrc \
+    && echo '    echo "💡 Run the setup script to install missing tools:"' >> ~/.bashrc \
+    && echo '    echo "   /usr/local/bin/setup-tools.sh"' >> ~/.bashrc \
+    && echo '    echo ""' >> ~/.bashrc \
+    && echo '  fi' >> ~/.bashrc \
+    && echo 'fi' >> ~/.bashrc
 
 # Default command
 CMD ["/bin/bash"]

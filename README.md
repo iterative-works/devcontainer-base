@@ -64,9 +64,44 @@ volumes:
   - ~/.cache/npm:/home/developer/.cache/npm:cached
 ```
 
-## Installed Tools (via setup-tools.sh)
+## Tool Installation
 
-- **direnv** (via Nix)
+The base image includes an installation script at `/usr/local/bin/setup-tools.sh` that installs:
+
+- **direnv** (via Nix) - Environment management with bash hook
 - **Scala ecosystem** (via Coursier): scala, sbt, scala-cli, metals
-- **Node.js** (via Mise)
-- **Claude Code CLI** (via npm)
+- **Node.js** (via Mise) - Latest LTS version
+- **Claude Code CLI** (via npm) - AI-powered development assistant
+
+### Automatic Setup Notification
+
+When you start a shell in the container, it automatically checks if development tools are installed and provides a helpful notification if any are missing:
+
+```
+🔧 Development tools not fully installed.
+💡 Run the setup script to install missing tools:
+   /usr/local/bin/setup-tools.sh
+```
+
+This check only runs on interactive shells and won't interfere with non-interactive usage.
+
+## Project Setup
+
+For setting up new projects with this base image:
+
+1. **Quick Start**: See [PROJECT_SETUP.md](./PROJECT_SETUP.md) for detailed setup instructions
+2. **Templates**: Use the example files in this directory:
+   - `docker-compose.example.yml` - Docker Compose configuration template
+   - `Dockerfile.example` - Dockerfile template for customization
+   - `devcontainer.example.json` - VS Code DevContainer configuration template
+3. **Aliases**: See [ALIASES.md](./ALIASES.md) for convenient shell aliases to manage containers
+
+### Quick Setup
+```bash
+# In your project directory
+mkdir .devcontainer
+cp /path/to/tools/devcontainer-base/docker-compose.example.yml .devcontainer/docker-compose.yml
+cp /path/to/tools/devcontainer-base/Dockerfile.example .devcontainer/Dockerfile
+cp /path/to/tools/devcontainer-base/devcontainer.example.json .devcontainer/devcontainer.json
+echo "COMPOSE_PROJECT_NAME=your-project-name" > .devcontainer/.env
+```

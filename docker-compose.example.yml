@@ -1,0 +1,77 @@
+# Example Docker Compose configuration for projects using iterative-works/devcontainer-base
+# Copy this file to your project's .devcontainer/docker-compose.yml and customize as needed
+
+services:
+  dev-container:
+    # Option 1: Build from local Dockerfile (recommended for customization)
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Option 2: Use base image directly (uncomment and comment out build section above)
+    # image: iterative-works/devcontainer-base:latest
+    
+    volumes:
+      # Mount project directory (adjust parent directory path if needed)
+      - ..:/workspace:cached
+      
+      # === CACHE DIRECTORIES (recommended for all projects) ===
+      # These significantly speed up tool installation and package downloads
+      - ~/.cache/nix:/home/developer/.cache/nix:cached
+      - ~/.cache/coursier:/home/developer/.cache/coursier:cached
+      - ~/.cache/mise:/home/developer/.cache/mise:cached
+      - ~/.cache/npm:/home/developer/.cache/npm:cached
+      
+      # === BUILD TOOL CACHES (recommended for JVM projects) ===
+      - ~/.m2:/home/developer/.m2:cached              # Maven dependencies
+      - ~/.ivy2:/home/developer/.ivy2:cached          # Ivy dependencies
+      - ~/.sbt:/home/developer/.sbt:cached            # SBT configuration and plugins
+      
+      # === TOOL INSTALLATIONS (recommended for all projects) ===
+      # Persist tool installations across container restarts
+      - ~/.local/share/mise:/home/developer/.local/share/mise:cached
+      - ~/.local/share/coursier:/home/developer/.local/share/coursier:cached
+      - ~/.local/bin:/home/developer/.local/bin:cached
+      
+      # === DEVELOPMENT TOOLS (optional) ===
+      # Mount Claude Code configuration if using AI assistance
+      - ~/.claude:/home/developer/.claude:cached
+      - ~/.claude.json:/home/developer/.claude.json:cached
+      
+      # === PROJECT-SPECIFIC MOUNTS (customize as needed) ===
+      # Example: Mount shared documentation
+      # - ~/Devel/dev-docs:/dev-docs:ro
+      
+      # Example: Mount SSH keys for git operations
+      # - ~/.ssh:/home/developer/.ssh:ro
+      
+      # Example: Mount GPG keys
+      # - ~/.gnupg:/home/developer/.gnupg:ro
+      
+    environment:
+      # Essential PATH configuration (required)
+      - PATH=/home/developer/.local/bin:/home/developer/.local/share/coursier/bin:/home/developer/.nix-profile/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      
+      # === PROJECT-SPECIFIC ENVIRONMENT VARIABLES ===
+      # Add your project's required environment variables here
+      # Use ${VAR:-} syntax for optional variables to avoid Docker Compose warnings
+      
+      # Example: Repository credentials (customize variable names as needed)
+      # - EBS_NEXUS_USERNAME=${EBS_NEXUS_USERNAME:-}
+      # - EBS_NEXUS_PASSWORD=${EBS_NEXUS_PASSWORD:-}
+      
+      # Example: API keys
+      # - API_KEY=${API_KEY:-}
+      
+      # Example: Environment-specific settings
+      # - NODE_ENV=${NODE_ENV:-development}
+      
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+# === DOCKER COMPOSE PROJECT NAMING ===
+# To avoid container name conflicts between projects, create a .env file
+# in the same directory as this docker-compose.yml with:
+# COMPOSE_PROJECT_NAME=your-project-name
