@@ -13,7 +13,7 @@ alias dev-down "docker compose -f .devcontainer/docker-compose.yml down"
 alias dev-build "docker compose -f .devcontainer/docker-compose.yml build && docker compose -f .devcontainer/docker-compose.yml up -d"
 alias dev-rebuild "docker compose -f .devcontainer/docker-compose.yml down && docker compose -f .devcontainer/docker-compose.yml build --no-cache && docker compose -f .devcontainer/docker-compose.yml up -d"
 alias dev-exec "docker compose -f .devcontainer/docker-compose.yml exec dev-container"
-alias dev-claude "docker compose -f .devcontainer/docker-compose.yml exec dev-container claude"
+alias dev-claude "docker compose -f .devcontainer/docker-compose.yml exec dev-container bash -ic 'direnv exec . claude --dangerously-skip-permissions'"
 alias dev-bash "docker compose -f .devcontainer/docker-compose.yml exec dev-container bash"
 alias dev-logs "docker compose -f .devcontainer/docker-compose.yml logs -f dev-container"
 ```
@@ -29,7 +29,7 @@ alias dev-down='docker compose -f .devcontainer/docker-compose.yml down'
 alias dev-build='docker compose -f .devcontainer/docker-compose.yml build && docker compose -f .devcontainer/docker-compose.yml up -d'
 alias dev-rebuild='docker compose -f .devcontainer/docker-compose.yml down && docker compose -f .devcontainer/docker-compose.yml build --no-cache && docker compose -f .devcontainer/docker-compose.yml up -d'
 alias dev-exec='docker compose -f .devcontainer/docker-compose.yml exec dev-container'
-alias dev-claude='docker compose -f .devcontainer/docker-compose.yml exec dev-container claude'
+alias dev-claude="docker compose -f .devcontainer/docker-compose.yml exec dev-container bash -ic 'direnv exec . claude --dangerously-skip-permissions'"
 alias dev-bash='docker compose -f .devcontainer/docker-compose.yml exec dev-container bash'
 alias dev-logs='docker compose -f .devcontainer/docker-compose.yml logs -f dev-container'
 ```
@@ -88,7 +88,7 @@ programs.fish = {
     dev-build = "docker compose -f .devcontainer/docker-compose.yml build && docker compose -f .devcontainer/docker-compose.yml up -d";
     dev-rebuild = "docker compose -f .devcontainer/docker-compose.yml down && docker compose -f .devcontainer/docker-compose.yml build --no-cache && docker compose -f .devcontainer/docker-compose.yml up -d";
     dev-exec = "docker compose -f .devcontainer/docker-compose.yml exec dev-container";
-    dev-claude = "docker compose -f .devcontainer/docker-compose.yml exec dev-container claude";
+    dev-claude = "docker compose -f .devcontainer/docker-compose.yml exec dev-container bash -ic 'direnv exec . claude --dangerously-skip-permissions'";
     dev-bash = "docker compose -f .devcontainer/docker-compose.yml exec dev-container bash";
     dev-logs = "docker compose -f .devcontainer/docker-compose.yml logs -f dev-container";
   };
